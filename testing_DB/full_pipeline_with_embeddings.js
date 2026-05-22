@@ -5,7 +5,7 @@ const path = require('path');
 function runScript(scriptName, args = []) {
     return new Promise((resolve, reject) => {
         console.log(`\n${'='.repeat(60)}`);
-        console.log(`▶️  Chạy: ${scriptName} ${args.join(' ')}`);
+        console.log(`  Chạy: ${scriptName} ${args.join(' ')}`);
         console.log(`${'='.repeat(60)}\n`);
 
         const child = spawn('node', [scriptName, ...args], {
@@ -15,16 +15,16 @@ function runScript(scriptName, args = []) {
 
         child.on('close', (code) => {
             if (code === 0) {
-                console.log(`\n✅ ${scriptName} hoàn thành\n`);
+                console.log(`\n ${scriptName} hoàn thành\n`);
                 resolve(code);
             } else {
-                console.error(`\n❌ ${scriptName} lỗi (exit code: ${code})\n`);
+                console.error(`\n ${scriptName} lỗi (exit code: ${code})\n`);
                 reject(new Error(`${scriptName} failed`));
             }
         });
 
         child.on('error', (err) => {
-            console.error(`\n❌ Lỗi chạy ${scriptName}:`, err.message, '\n');
+            console.error(`\n Lỗi chạy ${scriptName}:`, err.message, '\n');
             reject(err);
         });
     });
@@ -41,28 +41,28 @@ async function runFullPipeline() {
     `);
 
         // Bước 1: Upload PDF tới MinIO
-        console.log('\n📤 BƯỚC 1: Upload PDF tới MinIO');
+        console.log('\n BƯỚC 1: Upload PDF tới MinIO');
         await runScript('upload_pdf_to_minio.js');
 
         // Bước 2: Xử lý PDF + lưu metadata
-        console.log('\n📄 BƯỚC 2: Xử lý PDF + lưu metadata');
+        console.log('\n BƯỚC 2: Xử lý PDF + lưu metadata');
         await runScript('process_pdf_from_minio.js');
 
         // Bước 3: Chunking
-        console.log('\n✂️  BƯỚC 3: Chia PDF thành chunks');
+        console.log('\n  BƯỚC 3: Chia PDF thành chunks');
         await runScript('run_full_pipeline.js');
 
         // Bước 4: Tạo embeddings
-        console.log('\n🧠 BƯỚC 4: Tạo embeddings cho chunks');
+        console.log('\n BƯỚC 4: Tạo embeddings cho chunks');
         await runScript('generate_embeddings.js');
 
         // Bước 5: Tìm kiếm (demo)
-        console.log('\n🔍 BƯỚC 5: Demo tìm kiếm ngữ nghĩa');
+        console.log('\n BƯỚC 5: Demo tìm kiếm ngữ nghĩa');
         await runScript('semantic_search.js', ['máy tính']);
 
         console.log(`
     ╔════════════════════════════════════════════════════════════╗
-    ║                    ✅ PIPELINE HOÀN THÀNH                 ║
+    ║                     PIPELINE HOÀN THÀNH                 ║
     ║                                                             ║
     ║  Dữ liệu đã được xử lý và lưu trong:                      ║
     ║  - MinIO: File PDF gốc                                    ║
@@ -74,7 +74,7 @@ async function runFullPipeline() {
     `);
 
     } catch (err) {
-        console.error('\n💥 Pipeline lỗi:', err.message);
+        console.error('\n Pipeline lỗi:', err.message);
         process.exit(1);
     }
 }
