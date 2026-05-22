@@ -55,7 +55,7 @@ async function chunkPdfText(pdfData, chunkSize = 500) {
       });
     }
     
-    console.log(`✓ Chia thành ${chunks.length} chunks`);
+    console.log(` Chia thành ${chunks.length} chunks`);
     return chunks;
     
   } catch (err) {
@@ -111,7 +111,7 @@ async function main() {
     // Bước 2: Parse PDF
     console.log(' Parsing PDF...');
     const pdfData = await pdf(pdfBuffer);
-    console.log(`✓ PDF có ${pdfData.numpages} trang`);
+    console.log(` PDF có ${pdfData.numpages} trang`);
     console.log('');
     
     // Bước 3: Chia thành chunks
