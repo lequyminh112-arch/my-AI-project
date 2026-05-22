@@ -25,3 +25,23 @@ output/
 # Temp
 tmp/
 temp/
+
+# Sensitive / large local data
+temp_repos/
+testing_DB/minio-data/
+testing_DB/neo4j-data/
+testing_DB/minio-data/**
+testing_DB/neo4j-data/**
+
+# Secrets and config
+.env
+*.pem
+*.key
+*.crt
+secrets/
+
+# Python virtualenv/dist
+venv/
+env/
+/.venv/
+
