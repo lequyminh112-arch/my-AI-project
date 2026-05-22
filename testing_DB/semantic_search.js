@@ -20,7 +20,7 @@ async function initEmbeddingModel() {
         }
         return embeddingPipeline;
     } catch (err) {
-        console.error('❌ Lỗi khởi tạo mô hình:', err.message);
+        console.error(' Lỗi khởi tạo mô hình:', err.message);
         throw err;
     }
 }
@@ -39,7 +39,7 @@ async function generateQueryEmbedding(query) {
         return Array.from(result.data);
 
     } catch (err) {
-        console.error('❌ Lỗi tạo embedding query:', err.message);
+        console.error(' Lỗi tạo embedding query:', err.message);
         throw err;
     }
 }
@@ -67,8 +67,8 @@ function cosineSimilarity(vecA, vecB) {
 // ===== BƯỚC 4: Vector Search =====
 async function vectorSearch(query, topK = 5) {
     try {
-        console.log(`\n🔍 Tìm kiếm: "${query}"`);
-        console.log(`📊 Lấy top ${topK} kết quả\n`);
+        console.log(`\n Tìm kiếm: "${query}"`);
+        console.log(` Lấy top ${topK} kết quả\n`);
 
         // Tạo embedding cho query
         const queryEmbedding = await generateQueryEmbedding(query);
@@ -84,11 +84,11 @@ async function vectorSearch(query, topK = 5) {
             .toArray();
 
         if (chunks.length === 0) {
-            console.log('⚠️  Không tìm thấy chunks có embedding');
+            console.log('  Không tìm thấy chunks có embedding');
             return [];
         }
 
-        console.log(`✓ Tìm thấy ${chunks.length} chunks\n`);
+        console.log(` Tìm thấy ${chunks.length} chunks\n`);
 
         // Tính similarity cho từng chunk
         const results = chunks.map(chunk => ({
@@ -105,7 +105,7 @@ async function vectorSearch(query, topK = 5) {
         // Lấy top K
         const topResults = results.slice(0, topK);
 
-        console.log('📋 Kết quả tìm kiếm:\n');
+        console.log(' Kết quả tìm kiếm:\n');
         topResults.forEach((result, idx) => {
             console.log(`${idx + 1}. Similarity: ${(result.similarity * 100).toFixed(2)}%`);
             console.log(`   Chunk #${result.chunk_index}`);
@@ -116,7 +116,7 @@ async function vectorSearch(query, topK = 5) {
         return topResults;
 
     } catch (err) {
-        console.error('❌ Lỗi tìm kiếm:', err.message);
+        console.error(' Lỗi tìm kiếm:', err.message);
         throw err;
     } finally {
         await mongoClient.close();
@@ -139,9 +139,9 @@ async function searchFromQuery(query) {
 async function main() {
     const query = process.argv.slice(2).join(' ') || 'Máy tính';
 
-    console.log('🚀 Bắt đầu Vector Search\n');
+    console.log(' Bắt đầu Vector Search\n');
     await searchFromQuery(query);
-    console.log('✅ Tìm kiếm hoàn thành!');
+    console.log(' Tìm kiếm hoàn thành!');
 }
 
 main();
