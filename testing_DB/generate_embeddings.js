@@ -16,7 +16,7 @@ let embeddingPipeline = null;
 
 async function initEmbeddingModel() {
     try {
-        console.log('🔧 Khởi tạo mô hình embedding...');
+        console.log(' Khởi tạo mô hình embedding...');
 
         // Dùng mô hình Sentence Transformers lẹ + nhẹ
         embeddingPipeline = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
