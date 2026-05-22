@@ -21,9 +21,9 @@ async function initEmbeddingModel() {
         // Dùng mô hình Sentence Transformers lẹ + nhẹ
         embeddingPipeline = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
 
-        console.log('✓ Mô hình embedding sẵn sàng\n');
+        console.log(' Mô hình embedding sẵn sàng\n');
     } catch (err) {
-        console.error('❌ Lỗi khởi tạo mô hình:', err.message);
+        console.error(' Lỗi khởi tạo mô hình:', err.message);
         throw err;
     }
 }
@@ -46,7 +46,7 @@ async function generateEmbedding(text) {
         return embedding;
 
     } catch (err) {
-        console.error('❌ Lỗi tạo embedding:', err.message);
+        console.error(' Lỗi tạo embedding:', err.message);
         throw err;
     }
 }
@@ -74,7 +74,7 @@ async function saveEmbeddingToMongo(chunkId, embedding, content) {
         return result.modifiedCount > 0;
 
     } catch (err) {
-        console.error('❌ Lỗi lưu embedding:', err.message);
+        console.error(' Lỗi lưu embedding:', err.message);
         throw err;
     } finally {
         await mongoClient.close();
@@ -84,7 +84,7 @@ async function saveEmbeddingToMongo(chunkId, embedding, content) {
 // ===== BƯỚC 4: Tạo embedding cho tất cả chunks =====
 async function generateEmbeddingsForAllChunks(bookId = null) {
     try {
-        console.log('📚 Lấy chunks từ MongoDB...');
+        console.log(' Lấy chunks từ MongoDB...');
 
         await mongoClient.connect();
         const db = mongoClient.db(dbName);
@@ -99,7 +99,7 @@ async function generateEmbeddingsForAllChunks(bookId = null) {
         const chunks = await chunksCollection.find(query).toArray();
 
         if (chunks.length === 0) {
-            console.log('✓ Không có chunks cần embedding\n');
+            console.log(' Không có chunks cần embedding\n');
             return;
         }
 
@@ -109,7 +109,7 @@ async function generateEmbeddingsForAllChunks(bookId = null) {
         for (let i = 0; i < chunks.length; i++) {
             const chunk = chunks[i];
 
-            process.stdout.write(`\r⏳ Xử lý chunk ${i + 1}/${chunks.length}...`);
+            process.stdout.write(`\r Xử lý chunk ${i + 1}/${chunks.length}...`);
 
             try {
                 // Tạo embedding
@@ -130,14 +130,14 @@ async function generateEmbeddingsForAllChunks(bookId = null) {
                 );
 
             } catch (err) {
-                console.error(`\n❌ Lỗi chunk ${i + 1}:`, err.message);
+                console.error(`\n Lỗi chunk ${i + 1}:`, err.message);
             }
         }
 
-        console.log(`\n✓ Hoàn thành! Tạo embedding cho ${chunks.length} chunks\n`);
+        console.log(`\n Hoàn thành! Tạo embedding cho ${chunks.length} chunks\n`);
 
     } catch (err) {
-        console.error('❌ Lỗi:', err.message);
+        console.error(' Lỗi:', err.message);
         throw err;
     } finally {
         await mongoClient.close();
@@ -147,7 +147,7 @@ async function generateEmbeddingsForAllChunks(bookId = null) {
 // ===== BƯỚC 5: Chương trình chính =====
 async function main() {
     try {
-        console.log('🚀 Bắt đầu tạo embeddings\n');
+        console.log(' Bắt đầu tạo embeddings\n');
 
         // Khởi tạo mô hình
         await initEmbeddingModel();
@@ -158,10 +158,10 @@ async function main() {
         // Tạo embeddings
         await generateEmbeddingsForAllChunks(bookId);
 
-        console.log('✅ Tất cả embeddings đã được tạo và lưu vào MongoDB!');
+        console.log(' Tất cả embeddings đã được tạo và lưu vào MongoDB!');
 
     } catch (err) {
-        console.error('💥 Lỗi:', err);
+        console.error(' Lỗi:', err);
         process.exit(1);
     }
 }
