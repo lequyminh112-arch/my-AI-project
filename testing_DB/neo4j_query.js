@@ -11,10 +11,10 @@ let driver;
 async function initNeo4j() {
     try {
         driver = neo4j.driver(neo4jUri, neo4j.auth.basic(neo4jUser, neo4jPassword));
-        console.log('✓ Kết nối Neo4j thành công');
+        console.log(' Kết nối Neo4j thành công');
         return driver;
     } catch (err) {
-        console.error('❌ Lỗi kết nối Neo4j:', err.message);
+        console.error(' Lỗi kết nối Neo4j:', err.message);
         throw err;
     }
 }
@@ -24,7 +24,7 @@ async function getGraphStats() {
     const session = driver.session();
 
     try {
-        console.log('📊 Thống kê Knowledge Graph:\n');
+        console.log(' Thống kê Knowledge Graph:\n');
 
         // Đếm nodes
         const nodeQuery = `
@@ -34,7 +34,7 @@ async function getGraphStats() {
     `;
 
         const nodeResult = await session.run(nodeQuery);
-        console.log('📋 Nodes:');
+        console.log(' Nodes:');
         nodeResult.records.forEach(record => {
             const labels = record.get('labels');
             const count = record.get('count');
@@ -49,7 +49,7 @@ async function getGraphStats() {
     `;
 
         const relResult = await session.run(relQuery);
-        console.log('\n🔗 Relationships:');
+        console.log('\n Relationships:');
         relResult.records.forEach(record => {
             const type = record.get('type');
             const count = record.get('count');
@@ -57,7 +57,7 @@ async function getGraphStats() {
         });
 
     } catch (err) {
-        console.error('❌ Lỗi query thống kê:', err.message);
+        console.error(' Lỗi query thống kê:', err.message);
     } finally {
         await session.close();
     }
@@ -68,7 +68,7 @@ async function findSimilarChunks(chunkIndex, limit = 5) {
     const session = driver.session();
 
     try {
-        console.log(`🔍 Tìm chunks tương tự với Chunk #${chunkIndex}:\n`);
+        console.log(` Tìm chunks tương tự với Chunk #${chunkIndex}:\n`);
 
         const query = `
       MATCH (c1:Chunk {chunk_index: $chunkIndex})-[r:SIMILAR_TO]-(c2:Chunk)
@@ -84,7 +84,7 @@ async function findSimilarChunks(chunkIndex, limit = 5) {
             limit: limit
         });
 
-        console.log(`📋 Top ${limit} chunks tương tự:`);
+        console.log(` Top ${limit} chunks tương tự:`);
         result.records.forEach((record, idx) => {
             const chunkIdx = record.get('chunk_index');
             const similarity = record.get('similarity');
@@ -96,7 +96,7 @@ async function findSimilarChunks(chunkIndex, limit = 5) {
         });
 
     } catch (err) {
-        console.error('❌ Lỗi tìm chunks tương tự:', err.message);
+        console.error(' Lỗi tìm chunks tương tự:', err.message);
     } finally {
         await session.close();
     }
@@ -107,7 +107,7 @@ async function getChunksByBook() {
     const session = driver.session();
 
     try {
-        console.log('📚 Chunks theo sách:\n');
+        console.log(' Chunks theo sách:\n');
 
         const query = `
       MATCH (b:Book)-[:CONTAINS]->(c:Chunk)
@@ -124,14 +124,14 @@ async function getChunksByBook() {
             const chunkCount = record.get('chunk_count');
             const chunkIndices = record.get('chunk_indices');
 
-            console.log(`📖 ${title}`);
+            console.log(` ${title}`);
             console.log(`   Số chunks: ${chunkCount}`);
             console.log(`   Chunk indices: [${chunkIndices.slice(0, 10).join(', ')}${chunkIndices.length > 10 ? '...' : ''}]`);
             console.log('');
         });
 
     } catch (err) {
-        console.error('❌ Lỗi query chunks theo book:', err.message);
+        console.error(' Lỗi query chunks theo book:', err.message);
     } finally {
         await session.close();
     }
@@ -142,7 +142,7 @@ async function findChunkClusters(minSimilarity = 0.8) {
     const session = driver.session();
 
     try {
-        console.log(`🔗 Tìm clusters chunks (similarity > ${(minSimilarity * 100).toFixed(0)}%):\n`);
+        console.log(` Tìm clusters chunks (similarity > ${(minSimilarity * 100).toFixed(0)}%):\n`);
 
         const query = `
       MATCH (c1:Chunk)-[r:SIMILAR_TO]-(c2:Chunk)
@@ -156,7 +156,7 @@ async function findChunkClusters(minSimilarity = 0.8) {
 
         const result = await session.run(query, { minSimilarity: minSimilarity });
 
-        console.log('📋 Top 10 relationships mạnh nhất:');
+        console.log(' Top 10 relationships mạnh nhất:');
         result.records.forEach((record, idx) => {
             const chunk1 = record.get('chunk1');
             const chunk2 = record.get('chunk2');
@@ -166,7 +166,7 @@ async function findChunkClusters(minSimilarity = 0.8) {
         });
 
     } catch (err) {
-        console.error('❌ Lỗi tìm clusters:', err.message);
+        console.error(' Lỗi tìm clusters:', err.message);
     } finally {
         await session.close();
     }
@@ -174,7 +174,7 @@ async function findChunkClusters(minSimilarity = 0.8) {
 
 // ===== QUERY 5: VISUALIZATION QUERIES =====
 async function getVisualizationQueries() {
-    console.log('🎨 Queries để visualize trong Neo4j Browser:\n');
+    console.log(' Queries để visualize trong Neo4j Browser:\n');
 
     console.log('1. Xem toàn bộ graph:');
     console.log('   MATCH (n)-[r]->(m) RETURN n,r,m LIMIT 50\n');
@@ -197,7 +197,7 @@ async function getVisualizationQueries() {
 // ===== CHƯƠNG TRÌNH CHÍNH =====
 async function main() {
     try {
-        console.log('🚀 Neo4j Knowledge Graph Queries\n');
+        console.log(' Neo4j Knowledge Graph Queries\n');
 
         // Khởi tạo Neo4j
         await initNeo4j();
@@ -223,7 +223,7 @@ async function main() {
         getVisualizationQueries();
 
     } catch (err) {
-        console.error('💥 Lỗi:', err);
+        console.error(' Lỗi:', err);
     } finally {
         if (driver) {
             await driver.close();
