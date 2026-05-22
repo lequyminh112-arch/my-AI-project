@@ -20,7 +20,7 @@ async function main() {
             process.exit(1);
         }
 
-        console.log(`✓ Tìm thấy sách: ${latestBook.title}`);
+        console.log(` Tìm thấy sách: ${latestBook.title}`);
         console.log(`  ID: ${latestBook._id}`);
         console.log(`  MinIO Path: ${latestBook.minio_path}\n`);
 
