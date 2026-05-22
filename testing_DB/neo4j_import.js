@@ -16,10 +16,10 @@ let driver;
 async function initNeo4j() {
     try {
         driver = neo4j.driver(neo4jUri, neo4j.auth.basic(neo4jUser, neo4jPassword));
-        console.log('✓ Kết nối Neo4j thành công');
+        console.log(' Kết nối Neo4j thành công');
         return driver;
     } catch (err) {
-        console.error('❌ Lỗi kết nối Neo4j:', err.message);
+        console.error(' Lỗi kết nối Neo4j:', err.message);
         throw err;
     }
 }
@@ -40,11 +40,11 @@ async function getChunksFromMongo() {
             })
             .toArray();
 
-        console.log(`✓ Lấy ${chunks.length} valid chunks từ MongoDB`);
+        console.log(` Lấy ${chunks.length} valid chunks từ MongoDB`);
         return chunks;
 
     } catch (err) {
-        console.error('❌ Lỗi lấy dữ liệu từ MongoDB:', err.message);
+        console.error(' Lỗi lấy dữ liệu từ MongoDB:', err.message);
         throw err;
     } finally {
         await mongoClient.close();
@@ -56,7 +56,7 @@ async function createChunkNodes(chunks) {
     const session = driver.session();
 
     try {
-        console.log('📝 Tạo nodes cho chunks...');
+        console.log(' Tạo nodes cho chunks...');
 
         for (const chunk of chunks) {
             const query = `
@@ -78,7 +78,7 @@ async function createChunkNodes(chunks) {
             const createdAt = chunk.created_at ? new Date(chunk.created_at).toISOString() : new Date().toISOString();
 
             if (!id || bookId === null) {
-                console.warn(`⚠️ Bỏ qua chunk không hợp lệ: ${JSON.stringify({ _id: chunk._id, chunk_index: chunk.chunk_index })}`);
+                console.warn(` Bỏ qua chunk không hợp lệ: ${JSON.stringify({ _id: chunk._id, chunk_index: chunk.chunk_index })}`);
                 continue;
             }
 
@@ -95,10 +95,10 @@ async function createChunkNodes(chunks) {
             console.log(`✓ Tạo node cho chunk ${chunk.chunk_index}`);
         }
 
-        console.log(`✅ Đã tạo ${chunks.length} chunk nodes`);
+        console.log(` Đã tạo ${chunks.length} chunk nodes`);
 
     } catch (err) {
-        console.error('❌ Lỗi tạo chunk nodes:', err.message);
+        console.error(' Lỗi tạo chunk nodes:', err.message);
         throw err;
     } finally {
         await session.close();
@@ -110,7 +110,7 @@ async function createSimilarityRelationships(chunks, threshold = 0.7) {
     const session = driver.session();
 
     try {
-        console.log('🔗 Tạo relationships dựa trên similarity...');
+        console.log(' Tạo relationships dựa trên similarity...');
 
         let relationshipCount = 0;
 
@@ -142,10 +142,10 @@ async function createSimilarityRelationships(chunks, threshold = 0.7) {
             }
         }
 
-        console.log(`✅ Đã tạo ${relationshipCount} similarity relationships`);
+        console.log(` Đã tạo ${relationshipCount} similarity relationships`);
 
     } catch (err) {
-        console.error('❌ Lỗi tạo relationships:', err.message);
+        console.error(' Lỗi tạo relationships:', err.message);
         throw err;
     } finally {
         await session.close();
@@ -177,7 +177,7 @@ async function createBookNode() {
     const session = driver.session();
 
     try {
-        console.log('📚 Tạo book node...');
+        console.log(' Tạo book node...');
 
         // Lấy thông tin book từ MongoDB
         await mongoClient.connect();
@@ -210,7 +210,7 @@ async function createBookNode() {
         }
 
     } catch (err) {
-        console.error('❌ Lỗi tạo book node:', err.message);
+        console.error(' Lỗi tạo book node:', err.message);
         throw err;
     } finally {
         await session.close();
@@ -223,7 +223,7 @@ async function createBookChunkRelationships() {
     const session = driver.session();
 
     try {
-        console.log('🔗 Tạo relationships Book ↔ Chunks...');
+        console.log(' Tạo relationships Book ↔ Chunks...');
 
         const query = `
       MATCH (b:Book), (c:Chunk {book_id: b.id})
@@ -234,7 +234,7 @@ async function createBookChunkRelationships() {
         console.log(`✓ Tạo ${result.summary.counters.relationshipsCreated} relationships Book ↔ Chunks`);
 
     } catch (err) {
-        console.error('❌ Lỗi tạo book-chunk relationships:', err.message);
+        console.error(' Lỗi tạo book-chunk relationships:', err.message);
         throw err;
     } finally {
         await session.close();
@@ -244,7 +244,7 @@ async function createBookChunkRelationships() {
 // ===== CHƯƠNG TRÌNH CHÍNH =====
 async function main() {
     try {
-        console.log('🚀 Bắt đầu import dữ liệu sang Neo4j Knowledge Graph\n');
+        console.log(' Bắt đầu import dữ liệu sang Neo4j Knowledge Graph\n');
 
         // Khởi tạo Neo4j
         await initNeo4j();
@@ -266,17 +266,17 @@ async function main() {
         console.log('');
 
         // Tạo similarity relationships (có thể mất thời gian)
-        console.log('⚠️  Tạo similarity relationships có thể mất thời gian...');
+        console.log('  Tạo similarity relationships có thể mất thời gian...');
         await createSimilarityRelationships(chunks, 0.8); // threshold 0.8
         console.log('');
 
-        console.log('✅ Hoàn thành import dữ liệu sang Neo4j!');
-        console.log('🌐 Truy cập Neo4j Browser: http://localhost:7474');
+        console.log(' Hoàn thành import dữ liệu sang Neo4j!');
+        console.log(' Truy cập Neo4j Browser: http://localhost:7474');
         console.log('   Username: neo4j');
         console.log('   Password: neo4j123');
 
     } catch (err) {
-        console.error('💥 Lỗi:', err);
+        console.error(' Lỗi:', err);
     } finally {
         if (driver) {
             await driver.close();
