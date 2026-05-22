@@ -17,7 +17,7 @@ const dbName = 'chatbot_db';
 // ===== BƯỚC 1: Lấy file từ MinIO theo minio_path =====
 async function getPdfFromMinio(bucketName, objectName) {
   try {
-    console.log(`📥 Lấy file từ MinIO: ${bucketName}/${objectName}`);
+    console.log(` Lấy file từ MinIO: ${bucketName}/${objectName}`);
     
     const stream = await minioClient.getObject(bucketName, objectName);
     let chunks = [];
@@ -26,11 +26,11 @@ async function getPdfFromMinio(bucketName, objectName) {
     }
     const buffer = Buffer.concat(chunks);
     
-    console.log(`✓ Lấy file thành công (${buffer.length} bytes)`);
+    console.log(` Lấy file thành công (${buffer.length} bytes)`);
     return buffer;
     
   } catch (err) {
-    console.error('❌ Lỗi lấy file từ MinIO:', err.message);
+    console.error(' Lỗi lấy file từ MinIO:', err.message);
     throw err;
   }
 }
@@ -38,7 +38,7 @@ async function getPdfFromMinio(bucketName, objectName) {
 // ===== BƯỚC 2: Xử lý PDF thành chunks =====
 async function chunkPdfText(pdfData, chunkSize = 500) {
   try {
-    console.log(`📄 Chia PDF thành chunks (kích thước: ${chunkSize} ký tự)...`);
+    console.log(` Chia PDF thành chunks (kích thước: ${chunkSize} ký tự)...`);
     
     const text = pdfData.text;
     const chunks = [];
@@ -59,7 +59,7 @@ async function chunkPdfText(pdfData, chunkSize = 500) {
     return chunks;
     
   } catch (err) {
-    console.error('❌ Lỗi chia chunk:', err.message);
+    console.error(' Lỗi chia chunk:', err.message);
     throw err;
   }
 }
@@ -67,7 +67,7 @@ async function chunkPdfText(pdfData, chunkSize = 500) {
 // ===== BƯỚC 3: Lưu chunks vào MongoDB =====
 async function saveChunksToMongo(bookId, chunks, minioPath) {
   try {
-    console.log('💾 Lưu chunks vào MongoDB...');
+    console.log(' Lưu chunks vào MongoDB...');
     
     await mongoClient.connect();
     const db = mongoClient.db(dbName);
@@ -87,7 +87,7 @@ async function saveChunksToMongo(bookId, chunks, minioPath) {
     return result.insertedIds;
     
   } catch (err) {
-    console.error('❌ Lỗi lưu chunks:', err.message);
+    console.error(' Lỗi lưu chunks:', err.message);
     throw err;
   } finally {
     await mongoClient.close();
@@ -97,7 +97,7 @@ async function saveChunksToMongo(bookId, chunks, minioPath) {
 // ===== BƯỚC 4: Chương trình chính =====
 async function main() {
   try {
-    console.log('🚀 Bắt đầu chunking PDF từ MinIO\n');
+    console.log(' Bắt đầu chunking PDF từ MinIO\n');
     
     // Giả sử book_id = '66403f...' từ bước trước
     const bookId = process.argv[2] || '66403f9f1234567890abcdef'; // Truyền từ CLI
@@ -109,7 +109,7 @@ async function main() {
     const pdfBuffer = await getPdfFromMinio(bucketName, objectName);
     
     // Bước 2: Parse PDF
-    console.log('📄 Parsing PDF...');
+    console.log(' Parsing PDF...');
     const pdfData = await pdf(pdfBuffer);
     console.log(`✓ PDF có ${pdfData.numpages} trang`);
     console.log('');
@@ -122,10 +122,10 @@ async function main() {
     await saveChunksToMongo(bookId, chunks, minioPath);
     console.log('');
     
-    console.log('✅ Hoàn thành chunking!');
+    console.log(' Hoàn thành chunking!');
     
   } catch (err) {
-    console.error('💥 Lỗi:', err);
+    console.error(' Lỗi:', err);
     process.exit(1);
   }
 }
