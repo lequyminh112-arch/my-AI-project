@@ -77,7 +77,7 @@ async function createEntityNodes() {
     const session = driver.session();
 
     try {
-        console.log('🏷️  Tạo entity nodes...\n');
+        console.log('  Tạo entity nodes...\n');
 
         // Lấy chunks từ MongoDB
         await mongoClient.connect();
@@ -126,10 +126,10 @@ async function createEntityNodes() {
             console.log(`✓ Xử lý chunk ${chunk.chunk_index}: ${entities.concepts.length} concepts, ${entities.keywords.length} keywords`);
         }
 
-        console.log(`\n✅ Đã tạo ${entityCount} entity nodes`);
+        console.log(`\n Đã tạo ${entityCount} entity nodes`);
 
     } catch (err) {
-        console.error('❌ Lỗi tạo entity nodes:', err.message);
+        console.error(' Lỗi tạo entity nodes:', err.message);
         throw err;
     } finally {
         await session.close();
@@ -142,7 +142,7 @@ async function createChunkEntityRelationships() {
     const session = driver.session();
 
     try {
-        console.log('🔗 Tạo relationships Chunk ↔ Entities...\n');
+        console.log(' Tạo relationships Chunk ↔ Entities...\n');
 
         // Lấy chunks từ MongoDB
         await mongoClient.connect();
@@ -189,10 +189,10 @@ async function createChunkEntityRelationships() {
             console.log(`✓ Link chunk ${chunk.chunk_index} với ${entities.concepts.length + entities.keywords.length} entities`);
         }
 
-        console.log(`\n✅ Đã tạo ${relationshipCount} chunk-entity relationships`);
+        console.log(`\n Đã tạo ${relationshipCount} chunk-entity relationships`);
 
     } catch (err) {
-        console.error('❌ Lỗi tạo relationships:', err.message);
+        console.error(' Lỗi tạo relationships:', err.message);
         throw err;
     } finally {
         await session.close();
@@ -205,7 +205,7 @@ async function createEntityRelationships() {
     const session = driver.session();
 
     try {
-        console.log('🔗 Tạo relationships giữa entities...\n');
+        console.log(' Tạo relationships giữa entities...\n');
 
         // Concepts liên quan với keywords
         const conceptKeywordQuery = `
@@ -216,7 +216,7 @@ async function createEntityRelationships() {
     `;
 
         const result1 = await session.run(conceptKeywordQuery);
-        console.log(`✓ Tạo ${result1.summary.counters.relationshipsCreated} concept-keyword relationships`);
+        console.log(` Tạo ${result1.summary.counters.relationshipsCreated} concept-keyword relationships`);
 
         // Keywords liên quan với nhau (cùng xuất hiện trong chunk)
         const keywordKeywordQuery = `
@@ -227,10 +227,10 @@ async function createEntityRelationships() {
     `;
 
         const result2 = await session.run(keywordKeywordQuery);
-        console.log(`✓ Tạo ${result2.summary.counters.relationshipsCreated} keyword-keyword relationships`);
+        console.log(` Tạo ${result2.summary.counters.relationshipsCreated} keyword-keyword relationships`);
 
     } catch (err) {
-        console.error('❌ Lỗi tạo entity relationships:', err.message);
+        console.error(' Lỗi tạo entity relationships:', err.message);
         throw err;
     } finally {
         await session.close();
@@ -242,7 +242,7 @@ async function getKnowledgeGraphStats() {
     const session = driver.session();
 
     try {
-        console.log('📊 Thống kê Knowledge Graph với Entities:\n');
+        console.log(' Thống kê Knowledge Graph với Entities:\n');
 
         // Đếm tất cả nodes
         const nodeQuery = `
@@ -252,7 +252,7 @@ async function getKnowledgeGraphStats() {
     `;
 
         const nodeResult = await session.run(nodeQuery);
-        console.log('📋 Nodes:');
+        console.log(' Nodes:');
         nodeResult.records.forEach(record => {
             const labels = record.get('labels');
             const count = record.get('count');
@@ -267,7 +267,7 @@ async function getKnowledgeGraphStats() {
     `;
 
         const relResult = await session.run(relQuery);
-        console.log('\n🔗 Relationships:');
+        console.log('\n Relationships:');
         relResult.records.forEach(record => {
             const type = record.get('type');
             const count = record.get('count');
@@ -275,7 +275,7 @@ async function getKnowledgeGraphStats() {
         });
 
     } catch (err) {
-        console.error('❌ Lỗi thống kê:', err.message);
+        console.error(' Lỗi thống kê:', err.message);
     } finally {
         await session.close();
     }
@@ -284,7 +284,7 @@ async function getKnowledgeGraphStats() {
 // ===== CHƯƠNG TRÌNH CHÍNH =====
 async function main() {
     try {
-        console.log('🚀 Tạo Knowledge Graph với Entity Extraction\n');
+        console.log(' Tạo Knowledge Graph với Entity Extraction\n');
 
         // Khởi tạo
         await initNeo4j();
@@ -306,13 +306,13 @@ async function main() {
         await getKnowledgeGraphStats();
         console.log('');
 
-        console.log('✅ Hoàn thành tạo Knowledge Graph!');
-        console.log('🌐 Truy cập Neo4j Browser: http://localhost:7474');
+        console.log(' Hoàn thành tạo Knowledge Graph!');
+        console.log(' Truy cập Neo4j Browser: http://localhost:7474');
         console.log('   Username: neo4j');
         console.log('   Password: neo4j123');
 
     } catch (err) {
-        console.error('💥 Lỗi:', err);
+        console.error(' Lỗi:', err);
     } finally {
         if (driver) {
             await driver.close();
